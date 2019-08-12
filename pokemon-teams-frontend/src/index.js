@@ -39,7 +39,7 @@ function gottaCatchEmAll(){
         let card = document.querySelector("div")
         let list = document.createElement("ul")
         let listItem = document.createElement("li")
-        let button = ocument.createElement("button")
+        let button = document.createElement("button")
         card.appendChild(list)
         list.appendChild(listItem)
         listItem.insertAdjacentHTML("beforeend", ` ${button}`)
