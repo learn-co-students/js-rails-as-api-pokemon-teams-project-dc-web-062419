@@ -5,5 +5,6 @@ const POKEMONS_URL = `${BASE_URL}/pokemons`
 document.addEventListener('DOMContentLoaded', function(){
     console.log('Dom is loaded')
     fetchTrainers()
+    
 
 })
