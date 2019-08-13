@@ -15,7 +15,7 @@ class TrainersController < ApplicationController
                     :except => [:created_at, :updated_at]
                 }
             },
-            :except => [:created_at, :updated_at]
+            :except => [:trainer_id, :created_at, :updated_at]
         }
 
     end
