@@ -1,109 +1,86 @@
 document.addEventListener("DOMContentLoaded", ()=>{
     console.log("hello, is it me you're looking for?")
     getAllTrainers()
-    
-    
 })
-    function getAllTrainers(){
-        fetch(TRAINERS_URL)
-        .then(res => res.json())
-        .then(trainers => trainers.forEach(renderTrainer))
-    }
+
+function getAllTrainers(){
+    fetch(TRAINERS_URL)
+    .then(res => res.json())
+    .then(trainers => trainers.forEach(renderTrainer))
+}
     
-    function renderTrainer(trainer){
-        const trainerDiv = document.createElement('div')
-        trainerDiv.classList.add('card')
-        trainerDiv.dataset.id = `${trainer.id}`
-        
-        const trainerMain = document.querySelector('main')
-        const trainerP = document.createElement('p')
-        trainerP.innerText = `${trainer.name}`
-        
-        trainerMain.appendChild(trainerDiv)
-        
-        
-        // add Pokemon button
-        const addButton = document.createElement('button')
-        addButton.innerText = "Add Pokemon"
-        addButton.dataset.trainerId = `${trainer.id}`
-        addButton.addEventListener("click", (event) => addPokemon(event, trainer))
-        trainerDiv.appendChild(addButton)
-        const pokemonUl = document.createElement('ul')
-        trainerDiv.append(trainerP, pokemonUl)
-        
-        trainer.pokemons.forEach(pokemon => renderPokemon(pokemon, pokemonUl, trainer))
-        
-    }
+function renderTrainer(trainer){
+    const trainerDiv = document.createElement('div')
+    trainerDiv.classList.add('card')
+    trainerDiv.dataset.id = `${trainer.id}`
     
-    function renderPokemon(pokemon, pokemonUl, trainer){
-        
-        
+    const trainerMain = document.querySelector('main')
+    const trainerP = document.createElement('p')
+    trainerP.innerText = `${trainer.name}`
     
-        const pokemonLi = document.createElement('li')
-        pokemonUl.appendChild(pokemonLi)
-        pokemonLi.innerText = `${pokemon.nickname} (${pokemon.species})` 
-        
-        const releaseButton = document.createElement('button')
-        releaseButton.classList.add('release')
-        releaseButton.dataset.pokemonId = `${pokemon.id}`
-        releaseButton.innerText = 'Release'
-        
-        pokemonLi.appendChild(releaseButton)
-        releaseButton.addEventListener("click", (event)=> releasePokemon(event, trainer))
-        
-        
-        
-    }
+    trainerMain.appendChild(trainerDiv)
     
-    function addPokemon(event, trainer) {
-        event.preventDefault()
-        // debugger
-        
-        let pokeUl = event.target.parentNode.querySelector('ul')
-        let trainerId = event.target.dataset.trainerId 
-        let data = {trainer_id: trainerId}
-        
-        if (trainer.pokemons.length < 6){ 
-            fetch(POKEMONS_URL, {
-                method: "POST",
-                headers: {
-                    'content-type': 'application/json',
-                    'accept': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(res => res.json())
-            .then(poke => {
-                renderPokemon(poke, pokeUl, trainer)})
-            }
-            else{
-                alert("Get outta here!")
-            }
-        }
-        
-        
-        
-        
-        function releasePokemon(event, trainer) {
-            
-            // let pokeId = event.target.dataset.pokemonId
-            
-            fetch(`${POKEMONS_URL}/${event.target.dataset.pokemonId}`, {
-            
-                method: "DELETE"})
-                .then(res => res.json())
-                .then(deletedPokemon => {
-                   
-            event.target.parentElement.remove()
-            
+    const addButton = document.createElement('button')
+    const pokemonUl = document.createElement('ul')
+    
+    addButton.innerText = "Add Pokemon"
+    addButton.dataset.trainerId = trainer.id
+    addButton.addEventListener("click", (event) => addPokemon(event, trainer))
+
+    trainerDiv.appendChild(addButton)
+    trainerDiv.append(trainerP, pokemonUl)
+    
+    trainer.pokemons.forEach(pokemon => renderPokemon(pokemon, pokemonUl, trainer))
+}
+    
+function renderPokemon(pokemon, pokemonUl, trainer){
+    
+    const pokemonLi = document.createElement('li')
+    pokemonUl.appendChild(pokemonLi)
+    pokemonLi.innerText = `${pokemon.nickname} (${pokemon.species})` 
+    
+    const releaseButton = document.createElement('button')
+    releaseButton.classList.add('release')
+    releaseButton.dataset.pokemonId = pokemon.id
+    releaseButton.innerText = 'Release'
+    
+    pokemonLi.appendChild(releaseButton)
+    releaseButton.addEventListener("click", (event)=> releasePokemon(event, pokemonLi))        
+}
+    
+function addPokemon(event, trainer) {
+    let pokeUl = event.target.parentNode.querySelector('ul')
+    let trainerId = event.target.dataset.trainerId 
+    let data = { trainer_id: trainerId } // trainer_id is nice here because Ruby expects snakecase 
+
+    if (event.target.parentNode.querySelectorAll('li').length < 6) { 
+        fetch(POKEMONS_URL, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json' // always required for post and patch? 
+                // accept is only required when the API/server specifies it 
+            },
+            body: JSON.stringify(data)
         })
-        // debugger
+        .then(res => res.json())
+        .then(poke => renderPokemon(poke, pokeUl, trainer)) // "wrapped" renderPokemon in an anonymous function
+        } else {
+            alert("You already have six Pokemons, friend. To add a new one, you're going to have to release a Pokemon.")
+    }   
+}
         
-    }
+        
+        
+function releasePokemon(event, pokemonLi) {
+    fetch(`${POKEMONS_URL}/${event.target.dataset.pokemonId}`, {
+        method: "DELETE"})
+        .then(res => res.json())
+        .then(() => pokemonLi.remove())
+}
     
-    const BASE_URL = "http://localhost:3000"
-    const TRAINERS_URL = `${BASE_URL}/trainers`
-    const POKEMONS_URL = `${BASE_URL}/pokemons`
+const BASE_URL = "http://localhost:3000"
+const TRAINERS_URL = `${BASE_URL}/trainers`
+const POKEMONS_URL = `${BASE_URL}/pokemons`
     
     
     
