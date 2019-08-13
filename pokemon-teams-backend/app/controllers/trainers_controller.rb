@@ -10,10 +10,9 @@ class TrainersController < ApplicationController
     def trainer_serializer_options()
         { :include => {
             :pokemons => {
-         :except => [:created_at, :updated_at]
+                :except => [:trainer_id, :created_at, :updated_at]
             } 
-        }, :except => 
-            [:created_at, :updated_at]
+        }, :except => [:created_at, :updated_at] 
         }
     end
 
