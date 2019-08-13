@@ -11,6 +11,4 @@ class PokemonsController < ApplicationController
     render json: pokemon
    end
 
-  
-
 end
