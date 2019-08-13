@@ -70,7 +70,7 @@ function renderTrainer(trainer){
                 alert("TOO MANNNNNNNYYYY")
             else
                 renderPokemon(data)
-            end }
-            )
+            }
+        )
     }
 }
